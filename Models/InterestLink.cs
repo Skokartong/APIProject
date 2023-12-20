@@ -9,5 +9,7 @@ namespace APIProject.Models
         public int Id { get; set; }
         public string Url { get; set; }
         public string Description { get; set; }
+        public virtual ICollection<Person> Persons { get; set; }
+        public virtual ICollection<Interest> Interests { get; set; }
     }
 }
