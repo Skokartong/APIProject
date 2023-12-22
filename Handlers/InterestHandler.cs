@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using System.Data.SqlClient;
 using APIProject.Models;
 using APIProject.Data;
@@ -11,7 +13,7 @@ namespace APIProject.Handlers
 {
     public class InterestHandler
     {
-        public static IResult AddInterestToPerson(ApplicationContext context, int id, Interest newInterest, InterestLink newInterestLink)
+        public static IResult AddInterestToPerson(ApplicationContext context, int id, Interest newInterest, [FromBody]InterestLink newInterestLink)
         {
             var newInterestPerson = context.Persons
                 .Include(p => p.Interests)
@@ -26,14 +28,14 @@ namespace APIProject.Handlers
             var interest = new Interest
             {
                 Title = newInterest.Title,
-                Description = newInterest.Title
+                Description = newInterest.Description
             };
             newInterestPerson.Interests.Add(interest);
 
             var interestLink = new InterestLink
             {
                 Url = newInterestLink.Url,
-                Description = newInterestLink.Url
+                Description = newInterestLink.Description
             };
             newInterestPerson.InterestLinks.Add(interestLink);
             context.SaveChanges();
