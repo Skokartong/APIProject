@@ -13,7 +13,7 @@ namespace APIProject.Handlers
 {
     public class InterestHandler
     {
-        public static IResult AddInterestToPerson(ApplicationContext context, int id, Interest newInterest, [FromBody]InterestLink newInterestLink)
+        public static IResult AddInterestToPerson(ApplicationContext context, int id, Interest newInterest, InterestLink newInterestLink)
         {
             var newInterestPerson = context.Persons
                 .Include(p => p.Interests)
