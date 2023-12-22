@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
 using APIProject.Models;
 using APIProject.Data;
 using System.Linq;
 using System;
-using Microsoft.AspNetCore.Mvc;
 
 namespace APIProject.Handlers
 {
@@ -38,7 +38,7 @@ namespace APIProject.Handlers
             newInterestPerson.InterestLinks.Add(interestLink);
             context.SaveChanges();
 
-            return Results.Created();
+            return Results.Json(newInterestPerson);
         }
 
         public static IResult ViewInterest(ApplicationContext context, int id)
