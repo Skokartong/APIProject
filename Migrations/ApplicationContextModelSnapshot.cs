@@ -54,11 +54,21 @@ namespace APIProject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("InterestId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PersonId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("InterestId");
+
+                    b.HasIndex("PersonId");
 
                     b.ToTable("InterestLinks");
                 });
@@ -86,36 +96,6 @@ namespace APIProject.Migrations
                     b.ToTable("Persons");
                 });
 
-            modelBuilder.Entity("InterestInterestLink", b =>
-                {
-                    b.Property<int>("InterestLinksId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("InterestsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("InterestLinksId", "InterestsId");
-
-                    b.HasIndex("InterestsId");
-
-                    b.ToTable("InterestInterestLink");
-                });
-
-            modelBuilder.Entity("InterestLinkPerson", b =>
-                {
-                    b.Property<int>("InterestLinksId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PersonsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("InterestLinksId", "PersonsId");
-
-                    b.HasIndex("PersonsId");
-
-                    b.ToTable("InterestLinkPerson");
-                });
-
             modelBuilder.Entity("InterestPerson", b =>
                 {
                     b.Property<int>("InterestsId")
@@ -131,34 +111,23 @@ namespace APIProject.Migrations
                     b.ToTable("InterestPerson");
                 });
 
-            modelBuilder.Entity("InterestInterestLink", b =>
+            modelBuilder.Entity("APIProject.Models.InterestLink", b =>
                 {
-                    b.HasOne("APIProject.Models.InterestLink", null)
-                        .WithMany()
-                        .HasForeignKey("InterestLinksId")
+                    b.HasOne("APIProject.Interest", "Interest")
+                        .WithMany("InterestLinks")
+                        .HasForeignKey("InterestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("APIProject.Interest", null)
-                        .WithMany()
-                        .HasForeignKey("InterestsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("InterestLinkPerson", b =>
-                {
-                    b.HasOne("APIProject.Models.InterestLink", null)
-                        .WithMany()
-                        .HasForeignKey("InterestLinksId")
+                    b.HasOne("APIProject.Person", "Person")
+                        .WithMany("InterestLinks")
+                        .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("APIProject.Person", null)
-                        .WithMany()
-                        .HasForeignKey("PersonsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Interest");
+
+                    b.Navigation("Person");
                 });
 
             modelBuilder.Entity("InterestPerson", b =>
@@ -174,6 +143,16 @@ namespace APIProject.Migrations
                         .HasForeignKey("PersonsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("APIProject.Interest", b =>
+                {
+                    b.Navigation("InterestLinks");
+                });
+
+            modelBuilder.Entity("APIProject.Person", b =>
+                {
+                    b.Navigation("InterestLinks");
                 });
 #pragma warning restore 612, 618
         }

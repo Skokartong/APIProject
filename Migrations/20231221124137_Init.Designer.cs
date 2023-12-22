@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIProject.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20231213154349_Init")]
+    [Migration("20231221124137_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -45,6 +45,37 @@ namespace APIProject.Migrations
                     b.ToTable("Interests");
                 });
 
+            modelBuilder.Entity("APIProject.Models.InterestLink", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InterestId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PersonId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InterestId");
+
+                    b.HasIndex("PersonId");
+
+                    b.ToTable("InterestLinks");
+                });
+
             modelBuilder.Entity("APIProject.Person", b =>
                 {
                     b.Property<int>("Id")
@@ -59,6 +90,9 @@ namespace APIProject.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PhoneNumber")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -80,6 +114,25 @@ namespace APIProject.Migrations
                     b.ToTable("InterestPerson");
                 });
 
+            modelBuilder.Entity("APIProject.Models.InterestLink", b =>
+                {
+                    b.HasOne("APIProject.Interest", "Interest")
+                        .WithMany("InterestLinks")
+                        .HasForeignKey("InterestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("APIProject.Person", "Person")
+                        .WithMany("InterestLinks")
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Interest");
+
+                    b.Navigation("Person");
+                });
+
             modelBuilder.Entity("InterestPerson", b =>
                 {
                     b.HasOne("APIProject.Interest", null)
@@ -93,6 +146,16 @@ namespace APIProject.Migrations
                         .HasForeignKey("PersonsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("APIProject.Interest", b =>
+                {
+                    b.Navigation("InterestLinks");
+                });
+
+            modelBuilder.Entity("APIProject.Person", b =>
+                {
+                    b.Navigation("InterestLinks");
                 });
 #pragma warning restore 612, 618
         }

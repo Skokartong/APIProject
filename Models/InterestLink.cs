@@ -1,6 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Data;
+using Microsoft.Extensions.DependencyInjection;
+using System.Data.SqlClient;
 using APIProject.Models;
+using APIProject.Data;
+using System.Linq;
+using System;
 
 namespace APIProject.Models
 {
@@ -9,7 +13,7 @@ namespace APIProject.Models
         public int Id { get; set; }
         public string Url { get; set; }
         public string Description { get; set; }
-        public virtual ICollection<Person> Persons { get; set; }
-        public virtual ICollection<Interest> Interests { get; set; }
+        public virtual Person Person { get; set; }
+        public virtual Interest Interest { get; set; }
     }
 }

@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Data;
+using Microsoft.Extensions.DependencyInjection;
+using System.Data.SqlClient;
 using APIProject.Models;
-using System.Reflection;
+using APIProject.Data;
+using System.Linq;
+using System;
 
 namespace APIProject
 {
