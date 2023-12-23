@@ -8,36 +8,38 @@ using APIProject.Models;
 using APIProject.Data;
 using System.Linq;
 using System;
+using APIProject.Models.DTO;
+using APIProject.Models.ViewModels;
 
 namespace APIProject.Handlers
 {
     public class InterestHandler
     {
-        public static IResult AddInterestToPerson(ApplicationContext context, int id, Interest newInterest, InterestLink newInterestLink)
+        public static IResult AddInterestToPerson(ApplicationContext context, int id, InterestDto interestDto, InterestLinkDto interestLinkDto)
         {
-            var newInterestPerson = context.Persons
+            Person newInterestPerson = context.Persons
+                .Where(p => p.Id == id)
                 .Include(p => p.Interests)
                 .Include(p => p.InterestLinks)
-                .FirstOrDefault(p => p.Id == id);
+                .Single();
 
             if (newInterestPerson == null)
             {
                 return Results.NotFound();
             }
 
-            var interest = new Interest
+            newInterestPerson.Interests.Add(new Interest()
             {
-                Title = newInterest.Title,
-                Description = newInterest.Description
-            };
-            newInterestPerson.Interests.Add(interest);
+                Title = interestDto.Title,
+                Description = interestDto.Description
+            });
 
-            var interestLink = new InterestLink
+            newInterestPerson.InterestLinks.Add(new InterestLink()
             {
-                Url = newInterestLink.Url,
-                Description = newInterestLink.Description
-            };
-            newInterestPerson.InterestLinks.Add(interestLink);
+                Url = interestLinkDto.Url,
+                Description = interestLinkDto.Description
+            });
+
             context.SaveChanges();
 
             return Results.Json(newInterestPerson);
@@ -45,7 +47,7 @@ namespace APIProject.Handlers
 
         public static IResult ViewInterest(ApplicationContext context, int id)
         {
-            var viewInterest = context.Interests
+            var interestPerson = context.Interests
                 .Include(i => i.Persons)
                 .Where(i => i.Id == id)
                 .Select(i => new
@@ -59,12 +61,12 @@ namespace APIProject.Handlers
                 })
                 .FirstOrDefault();
 
-            if(viewInterest == null)
+            if (interestPerson == null)
             {
                 return Results.NotFound();
             }
 
-            return Results.Json(viewInterest);
+            return Results.Json(interestPerson);
         }
     }
 }
