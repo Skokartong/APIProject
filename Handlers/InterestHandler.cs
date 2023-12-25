@@ -8,65 +8,47 @@ using APIProject.Models;
 using APIProject.Data;
 using System.Linq;
 using System;
-using APIProject.Models.DTO;
-using APIProject.Models.ViewModels;
+using APIProject.Models;
 
 namespace APIProject.Handlers
 {
     public class InterestHandler
     {
-        public static IResult AddInterestToPerson(ApplicationContext context, int id, InterestDto interestDto, InterestLinkDto interestLinkDto)
+        // Add interest and link to specific person
+        public static IResult AddInterestToPerson(ApplicationContext context, int id, string newTitle, string newDescription, string newUrl, string newLinkDescription)
         {
             Person newInterestPerson = context.Persons
-                .Where(p => p.Id == id)
                 .Include(p => p.Interests)
                 .Include(p => p.InterestLinks)
-                .Single();
+                .FirstOrDefault(p => p.Id == id);
 
             if (newInterestPerson == null)
             {
                 return Results.NotFound();
             }
 
-            newInterestPerson.Interests.Add(new Interest()
+            Interest newInterest = new Interest()
             {
-                Title = interestDto.Title,
-                Description = interestDto.Description
-            });
+                Title = newTitle,
+                Description = newDescription
+            };
 
-            newInterestPerson.InterestLinks.Add(new InterestLink()
+            InterestLink newLink = new InterestLink()
             {
-                Url = interestLinkDto.Url,
-                Description = interestLinkDto.Description
-            });
+                Url = newUrl,
+                Description = newLinkDescription
+            };
+
+            // Adding new interest and link
+            newInterestPerson.Interests.Add(newInterest);
+            newInterestPerson.InterestLinks.Add(newLink);
+
+            newInterest.Persons = new List<Person> { newInterestPerson };
+            newLink.Person = newInterestPerson;
 
             context.SaveChanges();
 
             return Results.Json(newInterestPerson);
-        }
-
-        public static IResult ViewInterest(ApplicationContext context, int id)
-        {
-            var interestPerson = context.Interests
-                .Include(i => i.Persons)
-                .Where(i => i.Id == id)
-                .Select(i => new
-                {
-                    i.Title,
-                    Persons = i.Persons.Select(p => new
-                    {
-                        p.Name,
-                        p.Age
-                    })
-                })
-                .FirstOrDefault();
-
-            if (interestPerson == null)
-            {
-                return Results.NotFound();
-            }
-
-            return Results.Json(interestPerson);
         }
     }
 }

@@ -92,5 +92,25 @@ namespace APIProject.Handlers
 
             return Results.Json(linksPerson);
         }
+
+        public static IResult AddNewPerson(ApplicationContext context, string name, int age, int phoneNumber)
+        {
+            Person newPerson = new Person()
+            {
+                Name = name,
+                Age = age,
+                PhoneNumber = phoneNumber
+            };
+
+            context.Persons.Add(newPerson);
+            context.SaveChanges();
+
+            if (newPerson == null)
+            {
+                return Results.Problem();
+            }
+
+            return Results.Json(newPerson);
+        }
     }
 }

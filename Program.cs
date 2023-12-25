@@ -37,11 +37,11 @@ namespace APIProject
             // View all links tied to a single person
             app.MapGet("/persons/{id}/interestLinks", PersonHandler.ViewLinksPerson);
 
+            // Add new person
+            app.MapPost("/persons/add", PersonHandler.AddNewPerson);
+
             //Add new interest and link for specific person
             app.MapPost("/persons/{id}/interests/add", InterestHandler.AddInterestToPerson);
-
-            // View persons that share the same interest
-            app.MapPost("/interests/{id}/persons", InterestHandler.ViewInterest);
 
             app.Run();         
         }
