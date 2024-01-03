@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using APIProject.Data;
 using System.Linq;
 using System;
+using APIProject.Models.DTO;
+using APIProject.Models.ViewModels;
 
 namespace APIProject.Handlers
 {
@@ -17,32 +19,35 @@ namespace APIProject.Handlers
     {
         public static IResult ViewAllPersons(ApplicationContext context)
         {
-            try
-            {
-                var persons = context.Persons
-                    .Select(p => new {p.Id, p.Name, p.Age, p.PhoneNumber})
-                    .ToList();
-                return Results.Json(persons);
-            }
+            PersonViewModel[] listPersons = context.Persons
+                .Select(p => new PersonViewModel()
+                {
+                    Name = p.Name,
+                    Age = p.Age,
+                    PhoneNumber = p.PhoneNumber,
+                })
+                .ToArray();
 
-            catch (Exception ex)
-            {
-                return Results.NotFound();
-            }
+            return Results.Json(listPersons);
         }
-
         public static IResult ViewSinglePerson(ApplicationContext context, int id)
         {
-            var person = context.Persons
+            var singlePerson = context.Persons
                 .Where(p => p.Id == id)
-                .SingleOrDefault();
+                .Select(p => new PersonViewModel()
+                {
+                    Name = p.Name,
+                    Age = p.Age,
+                    PhoneNumber = p.PhoneNumber
+                })
+                .ToList();
 
-            if (person == null)
+            if (singlePerson == null)
             {
                 return Results.NotFound();
             }
 
-            return Results.Json(person);
+            return Results.Json(singlePerson);
         }
 
         public static IResult ViewInterestsPerson(ApplicationContext context, int id)
@@ -93,13 +98,13 @@ namespace APIProject.Handlers
             return Results.Json(linksPerson);
         }
 
-        public static IResult AddNewPerson(ApplicationContext context, string name, int age, int phoneNumber)
+        public static IResult AddNewPerson(ApplicationContext context, PersonDto personDto)
         {
             Person newPerson = new Person()
             {
-                Name = name,
-                Age = age,
-                PhoneNumber = phoneNumber
+                Name = personDto.Name,
+                Age = personDto.Age,
+                PhoneNumber = personDto.PhoneNumber
             };
 
             context.Persons.Add(newPerson);
@@ -111,6 +116,42 @@ namespace APIProject.Handlers
             }
 
             return Results.Json(newPerson);
+        }
+
+        public static IResult SearchPerson(ApplicationContext context, string name)
+        {
+            try
+            {
+                IQueryable<Person> query = context.Persons;
+
+                if(!string.IsNullOrEmpty(name))
+                {
+                    query = query.Where(p => p.Name.StartsWith(name));
+                }
+
+                List<PersonViewModel> personViewModels = query
+                    .Select(p => new PersonViewModel()
+                    {
+                        Name = p.Name,
+                        Age = p.Age,
+                        PhoneNumber = p.PhoneNumber
+                    })
+                    .ToList();
+
+                if(personViewModels.Count == 0)
+                {
+                    return Results.NotFound();
+                }
+
+                return Results.Json(personViewModels);
+            }
+
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return Results.Problem();
+            }
+
         }
     }
 }

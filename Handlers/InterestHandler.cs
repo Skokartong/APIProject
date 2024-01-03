@@ -8,47 +8,95 @@ using APIProject.Models;
 using APIProject.Data;
 using System.Linq;
 using System;
-using APIProject.Models;
+using APIProject.Models.ViewModels;
+using APIProject.Models.DTO;
+using System.Net;
+using System.Reflection;
 
 namespace APIProject.Handlers
 {
     public class InterestHandler
     {
-        // Add interest and link to specific person
-        public static IResult AddInterestToPerson(ApplicationContext context, int id, string newTitle, string newDescription, string newUrl, string newLinkDescription)
+        // Creating new interest
+        public static IResult AddInterest(ApplicationContext context, InterestDto interestDto)
         {
-            Person newInterestPerson = context.Persons
-                .Include(p => p.Interests)
-                .Include(p => p.InterestLinks)
-                .FirstOrDefault(p => p.Id == id);
-
-            if (newInterestPerson == null)
-            {
-                return Results.NotFound();
-            }
-
             Interest newInterest = new Interest()
             {
-                Title = newTitle,
-                Description = newDescription
+                Title = interestDto.Title,
+                Description = interestDto.Description
             };
+
+            // Saving new interest to database
+            context.Interests.Add(newInterest);
+            context.SaveChanges();
+
+            return Results.Json(newInterest);
+        }
+
+        // Creating new link and linking it to person and interest
+        public static IResult AddLink(ApplicationContext context, int personId, int interestId, InterestLinkDto interestLinkDto)
+        {
+            InterestLink existingLink = context.InterestLinks
+                .FirstOrDefault(l => l.PersonId == personId && l.InterestId == interestId);
+
+            if (existingLink != null)
+            {
+                return Results.Conflict();
+            }
 
             InterestLink newLink = new InterestLink()
             {
-                Url = newUrl,
-                Description = newLinkDescription
+                Url = interestLinkDto.Url,
+                Description = interestLinkDto.Description,
+                PersonId = personId,
+                InterestId = interestId
             };
 
-            // Adding new interest and link
-            newInterestPerson.Interests.Add(newInterest);
-            newInterestPerson.InterestLinks.Add(newLink);
-
-            newInterest.Persons = new List<Person> { newInterestPerson };
-            newLink.Person = newInterestPerson;
-
+            context.InterestLinks.Add(newLink);
             context.SaveChanges();
 
-            return Results.Json(newInterestPerson);
+            return Results.Json(newLink);
+        }
+
+        // Adding interest to specific person
+        public static IResult AddInterestToPerson(ApplicationContext context, int personId, int interestId)
+        {
+            try
+            {
+                Interest interestToAdd = context.Interests
+               .FirstOrDefault(i => i.Id == interestId);
+
+                if (interestToAdd == null)
+                {
+                    return Results.Problem(statusCode: 404, detail: "Interest not found");
+                }
+
+                Person person = context.Persons
+               .Include(p => p.Interests)
+               .FirstOrDefault(p => p.Id == personId);
+
+                if (person == null)
+                {
+                    return Results.Problem(statusCode: 404, detail: "Person not found");
+                }
+
+                person.Interests.Add(interestToAdd);
+                context.SaveChanges();
+
+                InterestViewModel interestViewModel = new InterestViewModel()
+                {
+                    Title = interestToAdd.Title,
+                    Description = interestToAdd.Description
+                };
+
+                return Results.Json(interestViewModel);
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return Results.Problem();
+            }
         }
     }
 }

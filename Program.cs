@@ -40,8 +40,17 @@ namespace APIProject
             // Add new person
             app.MapPost("/persons/add", PersonHandler.AddNewPerson);
 
-            //Add new interest and link for specific person
-            app.MapPost("/persons/{id}/interests/add", InterestHandler.AddInterestToPerson);
+            // Add new interest
+            app.MapPost("/interests/add", InterestHandler.AddInterest);
+
+            // Add new link for specific person and interest
+            app.MapPost("persons/{personId}/links/{interestId}/add", InterestHandler.AddLink);
+
+            // Add interest for specific person
+            app.MapPost("/persons/{personId}/interests/{interestId}/add", InterestHandler.AddInterestToPerson);
+
+            // Search for specific person (their name)
+            app.MapGet("/persons/{name}", PersonHandler.SearchPerson);
 
             app.Run();         
         }
