@@ -14,7 +14,6 @@ namespace APIProject
 {
     public class Program
     {
-        // Web API Project that showcases people and their interests
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
