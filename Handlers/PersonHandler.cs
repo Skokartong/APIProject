@@ -17,7 +17,7 @@ namespace APIProject.Handlers
 {
     public static class PersonHandler
     {
-        // Displaying all persons via PersonViewModel class
+        // Displaying all persons via 'PersonViewModel' class
         public static IResult ViewAllPersons(ApplicationContext context)
         {
             PersonViewModel[] listPersons = context.Persons

@@ -30,7 +30,16 @@ namespace APIProject.Handlers
             context.Interests.Add(newInterest);
             context.SaveChanges();
 
-            return Results.Json(newInterest);
+            // Displaying added interest to user
+            InterestViewModel interestViewModel = new InterestViewModel()
+            {
+                Id = newInterest.Id,
+                Title = newInterest.Title,
+                Description = newInterest.Description
+            };
+
+            return Results.Json(interestViewModel);
+
         }
 
         // Creating new link and linking it to person and interest
@@ -55,7 +64,14 @@ namespace APIProject.Handlers
             context.InterestLinks.Add(newLink);
             context.SaveChanges();
 
-            return Results.Json(newLink);
+            InterestLinkViewModel interestLinkViewModel = new InterestLinkViewModel()
+            {
+                Id = newLink.Id,
+                Url = newLink.Url,
+                Description = newLink.Description
+            };
+
+            return Results.Json(interestLinkViewModel);
         }
 
         // Adding interest to specific person
@@ -88,6 +104,7 @@ namespace APIProject.Handlers
                 // Displaying the interest that gets saved via 'InterestViewModel' class
                 InterestViewModel interestViewModel = new InterestViewModel()
                 {
+                    Id = interestToAdd.Id,
                     Title = interestToAdd.Title,
                     Description = interestToAdd.Description
                 };
