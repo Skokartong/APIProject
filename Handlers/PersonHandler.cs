@@ -17,6 +17,7 @@ namespace APIProject.Handlers
 {
     public static class PersonHandler
     {
+        // Displaying all persons via PersonViewModel class
         public static IResult ViewAllPersons(ApplicationContext context)
         {
             PersonViewModel[] listPersons = context.Persons
@@ -30,6 +31,8 @@ namespace APIProject.Handlers
 
             return Results.Json(listPersons);
         }
+
+        // Displaying particular person by searching for id and using PersonViewModel class
         public static IResult ViewSinglePerson(ApplicationContext context, int id)
         {
             var singlePerson = context.Persons
@@ -50,6 +53,7 @@ namespace APIProject.Handlers
             return Results.Json(singlePerson);
         }
 
+        // Viewing person's interests by searching for id and choosing to display their title and description
         public static IResult ViewInterestsPerson(ApplicationContext context, int personId)
         {
             var interestPerson = context.Persons
@@ -74,6 +78,7 @@ namespace APIProject.Handlers
             return Results.Json(interestPerson);
         }
 
+        // Same procedure as 'ViewInterestsPerson'
         public static IResult ViewLinksPerson(ApplicationContext context, int personId)
         {
             var linksPerson = context.Persons
@@ -98,6 +103,8 @@ namespace APIProject.Handlers
             return Results.Json(linksPerson);
         }
 
+        // Adding new person and saving to database
+        // After person is added, it's possible to add links and interests to person
         public static IResult AddNewPerson(ApplicationContext context, PersonDto personDto)
         {
             Person newPerson = new Person()

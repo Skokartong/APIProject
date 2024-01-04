@@ -17,7 +17,7 @@ namespace APIProject.Handlers
 {
     public class InterestHandler
     {
-        // Creating new interest
+        // Creating new interest using 'InterestDto' properties
         public static IResult AddInterest(ApplicationContext context, InterestDto interestDto)
         {
             Interest newInterest = new Interest()
@@ -66,6 +66,7 @@ namespace APIProject.Handlers
                 Interest interestToAdd = context.Interests
                .FirstOrDefault(i => i.Id == interestId);
 
+                // Checking if interest exist or not
                 if (interestToAdd == null)
                 {
                     return Results.Problem(statusCode: 404, detail: "Interest not found");
@@ -75,6 +76,7 @@ namespace APIProject.Handlers
                .Include(p => p.Interests)
                .FirstOrDefault(p => p.Id == personId);
 
+                // Checking if person exists in database
                 if (person == null)
                 {
                     return Results.Problem(statusCode: 404, detail: "Person not found");
@@ -83,6 +85,7 @@ namespace APIProject.Handlers
                 person.Interests.Add(interestToAdd);
                 context.SaveChanges();
 
+                // Displaying the interest that gets saved via 'InterestViewModel' class
                 InterestViewModel interestViewModel = new InterestViewModel()
                 {
                     Title = interestToAdd.Title,
