@@ -15,7 +15,7 @@ using APIProject.Models.ViewModels;
 
 namespace APIProject.Handlers
 {
-    public static class PersonHandler 
+    public static class PersonHandler
     {
         public static IResult ViewAllPersons(ApplicationContext context)
         {
@@ -50,11 +50,11 @@ namespace APIProject.Handlers
             return Results.Json(singlePerson);
         }
 
-        public static IResult ViewInterestsPerson(ApplicationContext context, int id)
+        public static IResult ViewInterestsPerson(ApplicationContext context, int personId)
         {
             var interestPerson = context.Persons
                 .Include(p => p.Interests)
-                .Where(p => p.Id == id)
+                .Where(p => p.Id == personId)
                 .Select(p => new
                 {
                     p.Name,
@@ -64,7 +64,7 @@ namespace APIProject.Handlers
                         i.Description
                     })
                 })
-                .FirstOrDefault();
+                .ToList();
 
             if (interestPerson == null)
             {
@@ -74,11 +74,11 @@ namespace APIProject.Handlers
             return Results.Json(interestPerson);
         }
 
-        public static IResult ViewLinksPerson(ApplicationContext context, int id)
+        public static IResult ViewLinksPerson(ApplicationContext context, int personId)
         {
             var linksPerson = context.Persons
                 .Include(p => p.InterestLinks)
-                .Where(p => p.Id == id)
+                .Where(p => p.Id == personId)
                 .Select(p => new
                 {
                     p.Name,
@@ -88,7 +88,7 @@ namespace APIProject.Handlers
                         l.Description
                     })
                 })
-                .FirstOrDefault();
+                .ToList();
 
             if (linksPerson == null)
             {
@@ -116,42 +116,6 @@ namespace APIProject.Handlers
             }
 
             return Results.Json(newPerson);
-        }
-
-        public static IResult SearchPerson(ApplicationContext context, string name)
-        {
-            try
-            {
-                IQueryable<Person> query = context.Persons;
-
-                if(!string.IsNullOrEmpty(name))
-                {
-                    query = query.Where(p => p.Name.StartsWith(name));
-                }
-
-                List<PersonViewModel> personViewModels = query
-                    .Select(p => new PersonViewModel()
-                    {
-                        Name = p.Name,
-                        Age = p.Age,
-                        PhoneNumber = p.PhoneNumber
-                    })
-                    .ToList();
-
-                if(personViewModels.Count == 0)
-                {
-                    return Results.NotFound();
-                }
-
-                return Results.Json(personViewModels);
-            }
-
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return Results.Problem();
-            }
-
         }
     }
 }

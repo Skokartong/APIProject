@@ -32,10 +32,10 @@ namespace APIProject
             app.MapGet("/persons/{id}", PersonHandler.ViewSinglePerson);
 
             // View all interests tied to a single person
-            app.MapGet("/persons/{id}/interests", PersonHandler.ViewInterestsPerson);
+            app.MapGet("/persons/{personId}/interests", PersonHandler.ViewInterestsPerson);
 
             // View all links tied to a single person
-            app.MapGet("/persons/{id}/interestLinks", PersonHandler.ViewLinksPerson);
+            app.MapGet("/persons/{personId}/interestLinks", PersonHandler.ViewLinksPerson);
 
             // Add new person
             app.MapPost("/persons/add", PersonHandler.AddNewPerson);
@@ -48,9 +48,6 @@ namespace APIProject
 
             // Add interest for specific person
             app.MapPost("/persons/{personId}/interests/{interestId}/add", InterestHandler.AddInterestToPerson);
-
-            // Search for specific person (their name)
-            app.MapGet("/persons/{name}", PersonHandler.SearchPerson);
 
             app.Run();         
         }
