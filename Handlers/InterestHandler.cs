@@ -17,6 +17,45 @@ namespace APIProject.Handlers
 {
     public class InterestHandler
     {
+        // Viewing all interests using 'InterestViewModel' class
+        public static IResult ViewAllInterests(ApplicationContext context)
+        {
+            InterestViewModel[] listInterests = context.Interests
+                .Select(i => new InterestViewModel()
+                {
+                    Id = i.Id,
+                    Title = i.Title,
+                    Description = i.Description
+                })
+                .ToArray();
+
+            return Results.Json(listInterests);
+        }
+
+        public static IResult ViewSpecificInterest(ApplicationContext context, int id)
+        {
+            var specificInterest = context.Interests
+                .Where(i => i.Id == id)
+                .Include(i => i.Persons)
+                .Select(i => new
+                {
+                    i.Title,
+                    i.Description,
+                    Persons = i.Persons.Select(p => new
+                    {
+                        p.Name
+                    })
+                })
+                .ToList();
+
+            if(specificInterest == null)
+            {
+                return Results.NotFound();
+            }
+
+            return Results.Json(specificInterest);
+        }
+
         // Creating new interest using 'InterestDto' properties
         public static IResult AddInterest(ApplicationContext context, InterestDto interestDto)
         {

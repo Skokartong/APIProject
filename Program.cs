@@ -24,18 +24,27 @@ namespace APIProject
 
             var app = builder.Build();
 
+            // GET
             // View all persons
             app.MapGet("/persons", PersonHandler.ViewAllPersons);
 
+            // View all interests
+            app.MapGet("/interests", InterestHandler.ViewAllInterests);
+
             // View specific person
             app.MapGet("/persons/{id}", PersonHandler.ViewSinglePerson);
+
+            // View specific interest and persons that share it
+            app.MapGet("interests/{id}", InterestHandler.ViewSpecificInterest);
 
             // View all interests tied to a single person
             app.MapGet("/persons/{personId}/interests", PersonHandler.ViewInterestsPerson);
 
             // View all links tied to a single person
-            app.MapGet("/persons/{personId}/interestLinks", PersonHandler.ViewLinksPerson);
+            app.MapGet("/persons/{personId}/links", PersonHandler.ViewLinksPerson);
 
+
+            // POST
             // Add new person
             app.MapPost("/persons/add", PersonHandler.AddNewPerson);
 
